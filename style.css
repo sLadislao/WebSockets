@@ -33,3 +33,9 @@ input[type=range]:focus {
 input[type=range]:focus::-webkit-slider-runnable-track {
         background: #ccc;
 }
+
+.potentiometer {
+        height: 32px;
+        width: 100%;
+        background: red;
+}
