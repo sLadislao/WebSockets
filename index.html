@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/$
+<html>
+  <head>
+    <title>LED Controller</title>
+    <meta name="viewport" content="width=400px" />
+
+    <script src="socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <input type="range" id="inputSlider" min="0" max="255" value="50" step="1"$
+    <br>
+    <br>
+    <span id="outputText">50</span>
+    <br>
+    <br><span id="inputText">Potentiometer</span>
+
+    <script type="text/javascript">
+      var socket = io.connect();
+
+      socket.on('update', function(receivedData) {
+        console.log("Potentiometer WS: " + receivedData);
+        document.getElementById("inputText").value = receivedData.value;
+      });
+
+      function showValue(newValue) {
+        document.getElementById("outputText").innerHTML=newValue;
+        socket.emit('led', { value: newValue });
+      }
+    </script>
+  </body>
+</html>
