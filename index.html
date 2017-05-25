@@ -23,7 +23,7 @@
       var socket = io.connect();
 
       socket.on('update', function(receivedData) {
-        $(".potentiometer").width((receivedData * 100) / 1024)+"%";
+        $(".potentiometer").width( ((receivedData * 100) / 1024)+"%" );
         console.log("Potentiometer WS: " + receivedData);
       });
 
