@@ -215,25 +215,25 @@
 											<div class="row">
 												<div class="col-xs-6 col-sm-6 col-md-12 col-lg-12">
 													<span class="text"> Red
-														<span id="red-slider-val" class="pull-right">150/255</span>
+														<span id="red-slider-val" class="pull-right">0/255</span>
 													</span>
 													<input type="text" class="slider slider-danger" id="red-slider" 
 														data-slider-min="0" 
 														data-slider-max="255"  
-														data-slider-value="150">
+														data-slider-value="50">
 												</div>
 												<div class="col-xs-6 col-sm-6 col-md-12 col-lg-12">
 													<span class="text"> Green
-														<span id="green-slider-val" class="pull-right">150/255</span>
+														<span id="green-slider-val" class="pull-right">0/255</span>
 													</span>
 													<input type="text" class="slider slider-success" id="green-slider"
 														data-slider-min="0" 
 														data-slider-max="255"  
-														data-slider-value="150">
+														data-slider-value="100">
 												</div>
 												<div class="col-xs-6 col-sm-6 col-md-12 col-lg-12">
 													<span class="text"> Blue
-														<span id="blue-slider-val" class="pull-right">150/255</span>
+														<span id="blue-slider-val" class="pull-right">0/255</span>
 													</span>
 													<input type="text" class="slider slider-primary" id="blue-slider"
 														data-slider-min="0" 
@@ -242,7 +242,7 @@
 												</div>
 												<div class="col-xs-6 col-sm-6 col-md-12 col-lg-12">
 													<span class="text"> RGB
-														<span id="rgb-slider-val" class="pull-right">150,150,150</span>
+														<span id="rgb-slider-val" class="pull-right">0,0,0</span>
 													</span>
 													<div id="RGB">
 														<p>&nbsp</p>
@@ -444,10 +444,21 @@
 		<script src="js/plugin/flot/jquery.flot.tooltip.min.js"></script>
 
 		<script src="js/plugin/knob/jquery.knob.min.js"></script>
+		<script src="socket.io/socket.io.js"></script>
 		
 		</script>
 
 		<script type="text/javascript">
+		// Sockets.IO
+		var socket = io.connect();
+		
+		socket.on('update', function(receivedData){
+			console.log("Potentiometer WS: " + receivedData);
+		});
+		function showValue(newValue) {
+			socket.emit('led', { value: newValue});
+		}
+		
 		// Knob
 		$('.knob').knob({
 			change: function (value) {
@@ -459,11 +470,18 @@
 		});
 		
 		// Sliders
-		var r = 0, g = 0 ,b = 0;
+		var r = 50, g = 100 ,b = 150;
+		$('#red-slider-val').text(r+ "/255");
+		$('#green-slider-val').text(g + "/255");
+		$('#blue-slider-val').text(b + "/255");
+		// PENDIENTE $('#red-slider').attr("data-slider-value") = 200
+		
 		var RGBChange = function() {
 			$('#rgb-slider-val').text(r + "/" + g + "/" + b);
 			$('#RGB').css('background', 'rgb('+r+','+g+','+b+')');
-		};	
+			showValue(r);
+		};
+		RGBChange();
 		
 		$('#red-slider').on('slide', function(ev){
 			$('#red-slider-val').text(ev.value + "/255");
