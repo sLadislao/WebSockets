@@ -8,7 +8,7 @@ var serialPort;
 var socketServer;
 var sendData;
 
-app.use(express.static(__dirname));
+app.use(express.static(__dirname + '/Client'));
 
 startServer();
 
