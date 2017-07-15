@@ -4,7 +4,6 @@ var http = require('http');
 var socketio = require('socket.io');
 var SerialPort = require("serialport");
 
-var serialPort;
 var socketServer;
 var sendData;
 
@@ -22,7 +21,8 @@ function startServer() {
 }
 
 function serialListener() {
-    serialPort = new SerialPort("/dev/ttyUSB0", {
+  /* LINUX */
+  /*serialPort = new SerialPort("/dev/ttyUSB0", {
     baudrate: 9600,
     parser: SerialPort.parsers.readline("\n"),
     // Defaults for arduino serial communication
@@ -30,15 +30,31 @@ function serialListener() {
     parity: 'none',
     stopBits: 1,
     flowControl: false
+  });*/
+  /* END LINUX */
+  
+  /* WINDOWS */
+  var serialPort = new SerialPort('COM3', {
+	baudrate:9600,
+	timeout:10,
+	parser: SerialPort.parsers.readline("\n")
   });
-
+  /* END WINDOWS */
+  
   serialPort.on("open", function() {
     console.log('Open serial communication');
-    // Listener to incoming data
-    serialPort.on('data', function(data) {
-      console.log("Potentiometer SP: " + data);
-      socketServer.emit('update', data.toString());
-    });
+	console.log('Port open. Data rate: ' + serialPort.options.baudRate);
+  });
+  serialPort.on("data", function(data) {
+    console.log("Reciviendo: " + data);
+	socketServer.emit('potChange', data.toString());
+	socketServer.emit('update', data.toString());
+  });
+  serialPort.on("close", function() {
+    console.log('Port closed');
+  });
+  serialPort.on('error',function(err){
+	console.log('Serial port error: ' + err);
   });
 }
 
@@ -47,16 +63,12 @@ function initSocketIO(httpServer) {
   socketServer = socketio.listen(httpServer);
   socketServer.on('connection', function (socket) {
     console.log("User connected");
-    socketServer.on("update", function(data) {
-      console.log("Potentiometer WS: " + receiveData);
-      socket.emit('updateData', {value: receiveData});
-    });
     socket.on('led', function(data) {
+      console.log("RGB - main.js: " + data.value);
       brigthness = data.value;
       var buf = new Buffer(1);
-      buf.writeUInt8(brigthness, 0);
+      buf.write(brigthness);
       serialPort.write(buf);
-      console.log("Slider: " + data.value);
     });
   });
 }

@@ -21,7 +21,9 @@
 		<link rel="icon" href="img/favicon/favicon.ico" type="image/x-icon">
 
 		<!-- #GOOGLE FONT -->
+		<!-- Descomentarear con internet
 		<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,300,400,700">
+		-->
 	</head>
 	<body class="desktop-detected">
 		<!-- #HEADER -->
@@ -452,12 +454,14 @@
 		// Sockets.IO
 		var socket = io.connect();
 		
-		socket.on('update', function(receivedData){
-			console.log("Potentiometer WS: " + receivedData);
-		});
 		function showValue(newValue) {
-			socket.emit('led', { value: newValue});
+			console.log("RGB - index.html " + newValue);
+			//socket.emit('led', { value: newValue});
 		}
+		socket.on('potChange', function(data) {
+		  console.log(data);
+		    
+		});
 		
 		// Knob
 		$('.knob').knob({
@@ -474,12 +478,11 @@
 		$('#red-slider-val').text(r+ "/255");
 		$('#green-slider-val').text(g + "/255");
 		$('#blue-slider-val').text(b + "/255");
-		// PENDIENTE $('#red-slider').attr("data-slider-value") = 200
 		
 		var RGBChange = function() {
 			$('#rgb-slider-val').text(r + "/" + g + "/" + b);
 			$('#RGB').css('background', 'rgb('+r+','+g+','+b+')');
-			showValue(r);
+			showValue(r+","+g+","+b);
 		};
 		RGBChange();
 		
